@@ -7,5 +7,8 @@ locals {
   # Compose the default AWS Config S3 Bucket name
   config_delivery_bucket_name = "config-bucket-${data.aws_caller_identity.current.account_id}"
   # Conditionally choose the AWS Config S3 Bucket name
-  effective_config_delivery_bucket_name = data.external.does_config_delivery_s3_bucket_exist.result.exists ? local.config_delivery_bucket_name : aws_s3_bucket.config_delivery_bucket[0].bucket
+  effective_config_delivery_bucket_name = try(
+    aws_s3_bucket.config_delivery_bucket[0].bucket,
+    local.config_delivery_bucket_name
+  )
 }

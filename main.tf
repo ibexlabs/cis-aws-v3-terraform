@@ -29,7 +29,7 @@ resource "aws_securityhub_standards_subscription" "cis_v3" {
 # Creates an Amazon S3 bucket to store AWS Config data
 resource "aws_s3_bucket" "config_delivery_bucket" {
   count  = data.external.does_config_delivery_s3_bucket_exist.result.exists ? 0 : 1
-  bucket = local.config_delivery_bucket_name
+  bucket = local.effective_config_delivery_bucket_name
 }
 
 # Creates an ACL on the AWS Config Delivery Bucket
@@ -102,7 +102,7 @@ resource "aws_iam_role_policy" "config_recorder_policy" {
           "s3:GetBucketLocation"
         ]
         Resource = [
-          "${aws_s3_bucket.config_delivery_bucket.arn}",
+          aws_s3_bucket.config_delivery_bucket.arn,
           "${aws_s3_bucket.config_delivery_bucket.arn}/*"
         ]
       },

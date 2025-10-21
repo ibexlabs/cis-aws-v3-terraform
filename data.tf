@@ -23,6 +23,6 @@ data "external" "does_config_delivery_s3_bucket_exist" {
   ]
 
   query = {
-    BUCKET = var.config_delivery_bucket_name
+    BUCKET = local.config_delivery_bucket_name
   }
 }
