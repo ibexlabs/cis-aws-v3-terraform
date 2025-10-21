@@ -7,3 +7,9 @@ variable "aws_region" {
   #   default = "us-east-1"
   description = "AWS region of the Primary AWS Region on your Production AWS account"
 }
+
+variable "ibexlabs_cross_account_role_name" {
+  type        = string
+  default     = "ibexlabs-crossaccount"
+  description = "Name of the Ibexlabs cross-account role"
+}

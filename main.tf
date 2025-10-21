@@ -2,7 +2,69 @@
 ###############
 
 ###############
-# AWS Security Hub CSPM 
+# AWS IAM
+###############
+
+resource "aws_iam_role" "ibexlabs_cross_account_role" {
+  name        = var.ibexlabs_cross_account_role_name
+  description = "This role is to grant access for WAR review"
+  path        = "/"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "IbexlabsCrossAccountPermissions"
+        Effect    = "Allow"
+        Principal = { AWS = "arn:${data.aws_partition.current.partition}:iam::651188399649:root" }
+        Action    = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+# Attach managed AWS policies
+resource "aws_iam_role_policy_attachment" "billing_readonly" {
+  role       = aws_iam_role.ibexlabs_cross_account_role.name
+  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AWSBillingReadOnlyAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "supportplans_readonly" {
+  role       = aws_iam_role.ibexlabs_cross_account_role.name
+  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AWSSupportPlansReadOnlyAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "readonly" {
+  role       = aws_iam_role.ibexlabs_cross_account_role.name
+  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/ReadOnlyAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "wellarchitected_fullaccess" {
+  role       = aws_iam_role.ibexlabs_cross_account_role.name
+  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/WellArchitectedConsoleFullAccess"
+}
+
+resource "aws_iam_role_policy" "get_contact_access_for_ftr" {
+  name = "GetContactAccessForFTR"
+  role = aws_iam_role.ibexlabs_cross_account_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "account:GetAlternateContact",
+          "account:GetContactInformation",
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+###############
+# AWS Security Hub CSPM
 ###############
 
 # Enables AWS Security Hub on this account
