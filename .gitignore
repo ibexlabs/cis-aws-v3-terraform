@@ -35,3 +35,12 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Custom exceptions
+**/*.sarif*
+**/**.log
+**/.DS_Store
+
+# Custom Terraform exceptions
+!terraform/environments/*.tfvars
+**/*.tfplan
